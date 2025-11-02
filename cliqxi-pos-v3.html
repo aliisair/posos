@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CLIQXI PHOTOBOOTH POS</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&display=swap">
+  <style>
+    :root {
+      --accent: #800000;
+      /* maroon */
+      --bg: #ffffff;
+      --text: #1a1a1a;
+      --card: #ffffff;
+      --muted: #6b6b6b;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 5
+    }
+
+    .hamburger {
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+      background: #fff;
+      color: var(--accent)
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 1px;
+      font-size: 18px;
+      color: var(--accent)
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 520px;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px dashed #f5f5f5
+    }
+
+    .product-row:last-child {
+      border-bottom: 0
+    }
+
+    .prod-info {
+      display: flex;
+      flex-direction: column
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #eee;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer
+    }
+
+    input[type="number"] {
+      width: 80px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      text-align: center
+    }
+
+    .pay-methods {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap
+    }
+
+    .pay-methods button {
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text)
+    }
+
+    .pay-methods button.active {
+      background: var(--accent);
+      color: white
+    }
+
+    .total {
+      font-weight: 800;
+      font-size: 22px;
+      margin-top: 10px;
+      color: var(--accent)
+    }
+
+    .receipt {
+      background: #fff;
+      padding: 18px;
+      border-radius: 10px;
+      border: 1px solid #f0f0f0;
+      font-family: monospace;
+      white-space: pre-wrap;
+      min-height: 480px;
+      max-height: 720px;
+      overflow: auto;
+      /* Ensure receipt container centers its content */
+      display: flex;
+      justify-content: center;
+    }
+
+    .list {
+      max-height: 420px;
+      overflow: auto;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0
+    }
+
+    .tx-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #fafafa
+    }
+
+    .tx-row:last-child {
+      border-bottom: 0
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 380px;
+      background: #fff;
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.06);
+      transform: translateX(-420px);
+      transition: transform .25s ease;
+      z-index: 10;
+      padding: 16px;
+      overflow: auto
+    }
+
+    .sidebar.open {
+      width: 600px;
+      transform: translateX(0)
+    }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      width: 100%
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted)
+    }
+
+    .settings-section {
+      margin-top: 12px;
+      border-top: 1px dashed #f0f0f0;
+      padding-top: 12px
+    }
+
+    .logo-preview {
+      height: 56px;
+      width: 220px;
+      object-fit: contain;
+      background: #fff;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #eee
+    }
+
+    .footer {
+      padding: 12px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center
+    }
+
+    .badge {
+      background: #f1f1f1;
+      padding: 6px 8px;
+      border-radius: 999px;
+      font-weight: 700
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f6f6f6;
+      border: 1px solid #eee
+    }
+
+    .flex {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    /* Receipt styling similar to sample */
+    .receipt-inner {
+      width: 320px;
+      /* Target width for preview */
+      padding: 18px;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      color: var(--text);
+      /* Add max width to ensure it doesn't take full width of container */
+      max-width: 320px;
+    }
+
+    .r-dots {
+      border-top: 3px dotted #ccc;
+      margin: 8px 0
+    }
+
+    .r-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+      font-size: 15px
+    }
+
+    .r-title {
+      text-align: center;
+      font-weight: 800;
+      font-size: 20px;
+      margin: 6px 0;
+      color: var(--accent)
+    }
+
+    .r-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
+      padding-top: 8px;
+      border-top: 1px dashed #eee;
+      margin-top: 8px;
+      font-size: 16px
+    }
+
+    .r-thanks {
+      text-align: center;
+      font-weight: 800;
+      margin-top: 14px;
+      font-size: 18px;
+      color: var(--accent)
+    }
+
+    .barcode {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px
+    }
+
+    @media(max-width:1100px) {
+      .container {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar {
+        width: 100%
+      }
+
+      .receipt {
+        max-height: none
+      }
+    }
+
+    /* Print only the receipt area - OPTIMIZED for 80mm thermal receipt (Final Fix) */
+    @media print {
+      @page {
+        /* Set paper size to a standard thermal receipt width and auto height */
+        size: 80mm auto !important;
+        /* Crucial: Remove all default print margins */
+        margin: 0 !important;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: none;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+
+      /* Make receipt inner visible and restrict to print area */
+      #receiptInner,
+      #receiptInner * {
+        visibility: visible;
+        box-shadow: none;
+      }
+
+      #receiptInner {
+        position: absolute;
+        left: 0;
+        top: 0;
+        /* Force the width to fit the 80mm paper size */
+        width: 80mm;
+        min-width: 80mm;
+        max-width: 80mm;
+        padding: 0;
+        margin: 0;
+        border: none;
+        background: white;
+        /* Override display centering for print mode, so it starts at left edge of 80mm paper */
+        justify-content: flex-start;
+        align-items: flex-start;
+        display: block;
+        /* Important to prevent display:flex interference */
+      }
+
+      /* Prevent any potential page breaks inside receipt elements */
+      .r-line,
+      .r-total,
+      .r-title,
+      .r-dots,
+      .r-thanks,
+      .barcode {
+        page-break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="hamburger" id="hamburger">☰</div>
+    <div class="brand">CLIQXI PHOTOBOOTH POS</div>
+    <div class="header-right">
+      <div class="small">Status: <span class="pill" id="onlineStatus">Offline</span></div>
+      <div class="small">v2.0</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:800">Price List</div>
+            <div class="small muted">Soft Copy = ₱100 (sessions) • Printed = ₱50</div>
+          </div>
+          <div id="eventDisplay" class="small muted">Cliqxi Photobooth</div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="product-row">
+            <div class="prod-info">
+              <div style="font-weight:700">Soft Copy</div>
+              <div class="muted">Digital file — each = ₱100 (adds 1 session)</div>
+            </div>
+            <div class="qty-controls">
+              <button class="btn-ghost" onclick="changeQty('soft',-1)">−</button>
+              <input id="softQty" type="number" min="0" value="0" onchange="updateTotals()">
+              <button class="btn-ghost" onclick="changeQty('soft',1)">+</button>
+            </div>
+          </div>
+
+          <div class="product-row">
+            <div class="prod-info">
+              <div style="font-weight:700">Printed Copy</div>
+              <div class="muted">Physical print — each = ₱50</div>
+            </div>
+            <div class="qty-controls">
+              <button class="btn-ghost" onclick="changeQty('print',-1)">−</button>
+              <input id="printQty" type="number" min="0" value="0" onchange="updateTotals()">
+              <button class="btn-ghost" onclick="changeQty('print',1)">+</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label class="small">Customer name (optional)</label>
+            <input id="custName" type="text" placeholder="Name for receipt / search"
+              style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee">
+          </div>
+
+          <div style="margin-top:12px;">
+            <div style="font-weight:700">Payment Method</div>
+            <div class="pay-methods" id="payMethods">
+              <button onclick="selectPay('Cash')">Cash</button>
+              <button onclick="selectPay('GCash')">GCash</button>
+              <button onclick="selectPay('Maya')">Maya</button>
+              <button onclick="selectPay('Card')">Card</button>
+            </div>
+          </div>
+
+          <div class="total" id="totalDisplay">₱0</div>
+
+          <div class="controls" style="margin-top:10px;">
+            <button class="btn" onclick="confirmPayment()">Confirm Payment & Generate Code</button>
+            <button class="btn-ghost" onclick="resetForm()">Reset</button>
+            <button class="btn-ghost" onclick="openSidebar()">Transactions</button>
+          </div>
+
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+            <strong>Note:</strong> Soft copies determine how many sessions the generated code allows.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:800">Receipt Preview</div>
+
+        </div>
+
+        <div class="receipt" id="receiptContainer" style="margin-top:12px;">
+          <div class="receipt-inner" id="receiptInner">
+          </div>
+        </div>
+
+        <div class="controls" style="margin-top:8px;">
+          <button class="btn-ghost" onclick="printReceipt()">Print Receipt</button>
+          <button class="btn-ghost" onclick="reprintLast()">Reprint Last</button>
+          <button class="btn-ghost" onclick="downloadTransactions()">Export JSON</button>
+          <button class="btn-ghost" onclick="exportToExcel()">Download Excel</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700">Quick Settings</div>
+          <div class="small-muted">Logo & receipt title</div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="settings-section">
+
+            <div style="margin-top:8px;">
+              <label class="small">Upload Logo (optional)</label><br>
+              <input id="logoUpload" type="file" accept="image/*" onchange="handleLogo(event)">
+              <div style="margin-top:8px;"><img id="logoPreview" class="logo-preview" style="display:none" /></div>
+            </div>
+
+            <div style="margin-top:8px;">
+              <button class="btn-ghost" onclick="resetSettings()">Reset Settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="sidebar" class="sidebar" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-weight:800">All Transactions</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-ghost" onclick="closeSidebar()">Close</button>
+      </div>
+    </div>
+
+    <div class="search">
+      <input id="searchInput" type="text" placeholder="Search by code, name, date..." oninput="renderTransactions()">
+      <select id="filterSelect" onchange="renderTransactions()">
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="usedup">Used Up</option>
+        <option value="archived">Archived</option>
+      </select>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn-ghost" onclick="bulkExport()">Export JSON</button>
+      <button class="btn-ghost" onclick="exportToExcel()">Download Excel</button>
+      <button class="btn-ghost" onclick="clearArchived()">Clear Archived</button>
+    </div>
+
+    <div id="txList" class="list" role="list"></div>
+
+    <div style="margin-top:12px" class="settings-section">
+      <div style="font-weight:700">Receipt Title</div>
+      <div class="small muted" style="margin-top:6px">Customize receipt header</div>
+      <div style="margin-top:8px">
+        <input id="receiptTitle" type="text" placeholder="Cliqxi Photobooth" onchange="saveSettings()"
+          style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee">
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">This prototype stores data locally in your browser (localStorage). Barcode uses JsBarcode
+    (CDN).</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.18.7/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // ======= Utilities =======
+    function $(id) { return document.getElementById(id) }
+    function money(n) { return '₱' + Number(n).toLocaleString() }
+    function now() { return new Date().toISOString().slice(0, 19).replace('T', ' ') }
+
+    // ======= State & Defaults =======
+    const PRICES = { soft: 100, print: 50 }
+    const token = "CLIQXI-PHOTOBOOTH-POS";
+    const API_BASE = "https://photobooth-server.up.railway.app";
+
+    let state = {
+      softQty: 0, printQty: 0, method: 'Cash', name: '', lastTx: null, online: false
+    }
+    let settings = {
+      displayName: 'Cliqxi Photobooth',
+      receiptTitle: 'Cliqxi Photobooth',
+      logoData: ''
+    }
+
+    // Load stored settings/transactions
+    async function loadAll() {
+
+      const data = await getTransactions();
+
+      try {
+        const s = localStorage.getItem('cliqxi_settings')
+        if (s) settings = JSON.parse(s)
+        const d = localStorage.getItem('cliqxi_state')
+        if (d) state = JSON.parse(d)
+        const local = JSON.parse(localStorage.getItem('cliqxi_tx')) || [];
+        const tx = [...local, ...(data || [])];
+        window.transactions = tx;
+        localStorage.setItem('cliqxi_tx', JSON.stringify(tx));
+      } catch (e) {
+        console.error('load failed', e)
+        window.transactions = []
+      }
+      // apply settings
+      // NOTE: Removed display name/receipt title setting application to avoid overwriting input fields on load
+      if (settings.logoData) { $('logoPreview').src = settings.logoData; $('logoPreview').style.display = 'block' }
+      renderEventName()
+      renderTransactions()
+      updateTotals()
+      updateOnlinePill()
+      // Render last transaction on load if available
+      const last = JSON.parse(localStorage.getItem('cliqxi_last') || 'null')
+      if (last) { renderReceiptInner(last) }
+    }
+    loadAll()
+
+    // ======= UI helpers =======
+    function renderEventName() {
+      $('eventDisplay').innerText = settings.displayName || 'Cliqxi Photobooth'
+      document.querySelector('.brand').innerText = 'CLIQXI PHOTOBOOTH POS'
+    }
+    function updateOnlinePill() { $('onlineStatus').innerText = state.online ? 'Online' : 'Offline' }
+
+    function changeQty(type, delta) {
+      const el = type === 'soft' ? $('softQty') : $('printQty')
+      let v = Number(el.value) || 0
+      v += delta
+      if (v < 0) v = 0
+      el.value = v
+      updateTotals()
+    }
+
+    function updateTotals() {
+      state.softQty = Number($('softQty').value) || 0
+      state.printQty = Number($('printQty').value) || 0
+      state.name = $('custName').value.trim()
+      const total = state.softQty * PRICES.soft + state.printQty * PRICES.print
+      $('totalDisplay').innerText = money(total)
+      // update receipt preview only if items are added, otherwise keep last receipt
+      if (total > 0) {
+        renderReceiptPreview()
+      } else if (!state.lastTx) {
+        // Clear preview if everything is zero and there is no last transaction
+        $('receiptInner').innerHTML = ''
+        window.currentRenderTx = null
+      }
+    }
+
+    function selectPay(m) {
+      state.method = m
+      Array.from(document.querySelectorAll('.pay-methods button')).forEach(b => {
+        if (b.innerText === m) b.classList.add('active'); else b.classList.remove('active')
+      })
+    }
+
+    function generateCode() {
+      // Q-(5 digits) prefer 5 but allow 4 occasionally
+      const digits = Math.random() < 0.2 ? 4 : 5
+      let num = Math.floor(Math.random() * Math.pow(10, digits))
+      num = String(num).padStart(digits, '0')
+      return 'Q' + num
+    }
+
+    // ======= Transactions management =======
+    function saveTxList() { localStorage.setItem('cliqxi_tx', JSON.stringify(window.transactions)) }
+
+    async function confirmPayment() {
+      updateTotals()
+      const total = state.softQty * PRICES.soft + state.printQty * PRICES.print
+      if (total <= 0) { alert('Please add an item before confirming payment.'); return }
+      const code = generateCode()
+      const tx = {
+        id: code,
+        softQty: state.softQty,
+        printQty: state.printQty,
+        total: total,
+        method: state.method || 'Cash',
+        sessionLimit: state.softQty,
+        sessionUsed: 0,
+        status: state.softQty > 0 ? 'Active' : 'UsedUp',
+        name: state.name || '',
+        createdAt: now(),
+        archived: false
+      }
+      window.transactions.unshift(tx)
+      saveTxList()
+      state.lastTx = tx
+      renderReceiptInner(tx)
+      localStorage.setItem('cliqxi_last', JSON.stringify(tx))
+      renderTransactions()
+      await saveTransaction(tx)
+     
+      // reset form but keep name and the last receipt rendered
+      $('softQty').value = 0; $('printQty').value = 0;
+      // Do NOT call updateTotals() here, as it would re-render the preview based on 0 quantities.
+    }
+
+    async function saveTransaction(tx) {
+      try {
+        const res = await fetch(`${API_BASE}/api/transaction/pay`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(tx)
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    function buildReceiptLines(tx) {
+      const title = settings.receiptTitle || 'Cliqxi Photobooth'
+      const lines = []
+      lines.push(title)
+      lines.push('') // spacer
+      if (tx.softQty > 0) lines.push({ label: 'Soft Copy x' + tx.softQty, value: money(tx.softQty * PRICES.soft) })
+      if (tx.printQty > 0) lines.push({ label: 'Printed Copy x' + tx.printQty, value: money(tx.printQty * PRICES.print) })
+      lines.push({ label: 'Payment Method', value: tx.method })
+      lines.push({ label: 'TOTAL', value: money(tx.total), strong: true })
+      lines.push({ label: 'Access Code', value: tx.id })
+      lines.push('Use this code to access the booth')
+      lines.push({ label: 'Valid for ' + (tx.sessionLimit || 0) + ' session' + ((tx.sessionLimit > 1) ? 's' : ''), value: '' })
+      lines.push('Date: ' + tx.createdAt)
+      return lines
+    }
+
+    function renderReceiptInner(tx) {
+      // render the big receipt in the right panel
+      if (!tx) {
+        // preview from current form
+        const soft = Number($('softQty').value) || 0
+        const print = Number($('printQty').value) || 0
+        if (soft <= 0 && print <= 0) {
+          $('receiptInner').innerHTML = '';
+          window.currentRenderTx = null;
+          return;
+        }
+        tx = { id: '—', softQty: soft, printQty: print, total: soft * PRICES.soft + print * PRICES.print, method: state.method || 'Cash', sessionLimit: soft, createdAt: now() }
+      }
+      const container = $('receiptInner')
+      container.innerHTML = ''
+      // header (logo or title)
+      if (settings.logoData) {
+        container.innerHTML += '<div style="text-align:center"><img src="' + settings.logoData + '" style="max-width:160px;max-height:60px;object-fit:contain"></div>'
+      }
+      container.innerHTML += '<div class="r-dots"></div>'
+      container.innerHTML += '<div class="r-title">' + (settings.receiptTitle || 'Cliqxi Photobooth') + '</div>'
+      container.innerHTML += '<div class="r-dots"></div>'
+      // items
+      const lines = buildReceiptLines(tx)
+      // iterate lines
+      lines.forEach(item => {
+        if (typeof item === 'string') {
+          container.innerHTML += '<div style="text-align:center;color:var(--muted);font-size:12px;margin-top:6px">' + item + '</div>'
+        } else {
+          if (item.strong) {
+            container.innerHTML += '<div class="r-total"><div>' + item.label + '</div><div>' + item.value + '</div></div>'
+          } else {
+            container.innerHTML += '<div class="r-line"><div>' + item.label + '</div><div>' + item.value + '</div></div>'
+          }
+        }
+      })
+      container.innerHTML += '<div class="r-dots"></div>'
+      container.innerHTML += '<div class="r-thanks">THANK YOU</div>'
+      // barcode area
+      container.innerHTML += '<div class="barcode"><svg id="barcodeSVG"></svg></div>'
+      // generate barcode: CHANGED to 0ms for instant rendering
+      setTimeout(() => {
+        try {
+          // Only generate barcode if a real code exists (not the preview '-')
+          if (tx.id !== '—') {
+            JsBarcode("#barcodeSVG", tx.id, { format: "CODE128", displayValue: true, height: 50, fontSize: 12, margin: 4, lineColor: "#000000" })
+          } else {
+            // Check if the element exists before attempting to remove it
+            const barcodeSVG = $('barcodeSVG');
+            if (barcodeSVG) {
+              barcodeSVG.remove();
+            }
+          }
+        } catch (e) { console.warn('barcode err', e) }
+      }, 0)
+      // ensure last tx rendered for printing
+      window.currentRenderTx = tx
+    }
+
+    function renderReceiptPreview() { renderReceiptInner(null) }
+
+    async function getTransactions() {
+      try {
+        const res = await fetch(`${API_BASE}/api/transaction/all`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Error fetching data");
+        }
+
+        const data = await res.json();
+        return data;
+
+      } catch (error) {
+        console.error("Failed to fetch transactions:", error);
+        return null;
+      }
+    }
+
+    async function renderTransactions() {
+      const container = $('txList')
+      container.innerHTML = ''
+      const q = $('searchInput').value.trim().toLowerCase()
+      const filter = $('filterSelect').value
+      const list = window.transactions || [];
+
+      // const list = [...local, ...(data || [])];
+      const filtered = list.filter(tx => {
+        if (filter === 'active' && tx.status.toLowerCase() !== 'active') return false
+        if (filter === 'usedup' && tx.status.toLowerCase() !== 'usedup') return false
+        if (filter === 'archived' && !tx.archived) return false
+        if (q === '') return true
+        return (tx.id && tx.id.toLowerCase().includes(q)) || (tx.name && tx.name.toLowerCase().includes(q)) || (tx.createdAt && tx.createdAt.toLowerCase().includes(q))
+      })
+      if (filtered.length === 0) { container.innerHTML = '<div style="padding:12px;color:var(--muted)">No transactions found</div>'; return }
+      filtered.forEach(tx => {
+        const div = document.createElement('div'); div.className = 'tx-row'
+        const left = document.createElement('div')
+        left.innerHTML = '<div style="font-weight:700">' + (tx.name || 'Guest') + ' <span class="small muted">(' + tx.method + ')</span></div><div class="small">' + tx.id + ' • ' + money(tx.total) + ' • ' + tx.createdAt + '</div>'
+        const right = document.createElement('div'); right.style.display = 'flex'; right.style.gap = '6px'; right.style.alignItems = 'center'
+        const viewBtn = document.createElement('button'); viewBtn.className = 'btn-ghost'; viewBtn.innerText = 'View'; viewBtn.onclick = () => { viewTx(tx.id) }
+        const reprintBtn = document.createElement('button'); reprintBtn.className = 'btn-ghost'; reprintBtn.innerText = 'Reprint'; reprintBtn.onclick = () => { reprint(tx.id) }
+        const archiveBtn = document.createElement('button'); archiveBtn.className = 'btn-ghost'; archiveBtn.innerText = 'Archive'; archiveBtn.onclick = () => { archiveTx(tx.id) }
+        right.appendChild(viewBtn); right.appendChild(reprintBtn); right.appendChild(archiveBtn)
+        div.appendChild(left); div.appendChild(right)
+        container.appendChild(div)
+      })
+    }
+
+    function viewTx(id) {
+      const tx = window.transactions.find(t => t.id === id)
+      if (!tx) return alert('Transaction not found')
+      renderReceiptInner(tx)
+    }
+
+    function reprint(id) {
+      const tx = window.transactions.find(t => t.id === id)
+      if (!tx) return alert('Transaction not found')
+      renderReceiptInner(tx)
+      printReceipt()
+    }
+
+    function reprintLast() {
+      const last = JSON.parse(localStorage.getItem('cliqxi_last') || 'null')
+      if (!last) return alert('No last transaction found')
+      renderReceiptInner(last)
+      printReceipt()
+    }
+
+    function archiveTx(id) {
+      const idx = window.transactions.findIndex(t => t.id === id)
+      if (idx === -1) return
+      window.transactions[idx].archived = true
+      saveTxList(); renderTransactions()
+      alert('Transaction archived')
+    }
+
+    function clearArchived() {
+      if (!confirm('Clear archived transactions?')) return
+      window.transactions = window.transactions.filter(t => !t.archived)
+      saveTxList(); renderTransactions()
+    }
+
+    function bulkExport() {
+      const data = JSON.stringify(window.transactions, null, 2)
+      const blob = new Blob([data], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a'); a.href = url; a.download = 'cliqxi_transactions.json'; a.click(); URL.revokeObjectURL(url)
+    }
+
+    // ======= Sidebar controls =======
+    $('hamburger').addEventListener('click', () => { openSidebar() })
+    function openSidebar() { $('sidebar').classList.add('open'); $('sidebar').setAttribute('aria-hidden', 'false') }
+    function closeSidebar() { $('sidebar').classList.remove('open'); $('sidebar').setAttribute('aria-hidden', 'true') }
+
+    // ======= Settings =======
+    function handleLogo(e) {
+      const f = e.target.files[0]; if (!f) return
+      const reader = new FileReader(); reader.onload = (ev) => {
+        settings.logoData = ev.target.result; localStorage.setItem('cliqxi_settings', JSON.stringify(settings)); $('logoPreview').src = settings.logoData; $('logoPreview').style.display = 'block'; renderReceiptInner(window.currentRenderTx || null)
+      }; reader.readAsDataURL(f)
+    }
+
+    function saveSettings() {
+      settings.displayName = $('displayName').value || 'Cliqxi Photobooth'
+      settings.receiptTitle = $('receiptTitle').value || 'Cliqxi Photobooth'
+      localStorage.setItem('cliqxi_settings', JSON.stringify(settings))
+      renderEventName(); renderReceiptInner(window.currentRenderTx || null)
+    }
+
+    function resetSettings() {
+      if (!confirm('Reset settings to defaults?')) return
+      settings = { displayName: 'Cliqxi Photobooth', receiptTitle: 'Cliqxi Photobooth', logoData: '' }
+      localStorage.setItem('cliqxi_settings', JSON.stringify(settings))
+      $('displayName').value = settings.displayName; $('receiptTitle').value = settings.receiptTitle; $('logoPreview').style.display = 'none'; renderEventName(); renderReceiptInner(window.currentRenderTx || null)
+    }
+
+    // ======= Excel Export using SheetJS =======
+    function exportToExcel() {
+      try {
+        const tx = window.transactions || []
+        if (tx.length === 0) { alert('No transactions to export'); return }
+        // map to rows
+        const rows = tx.map(t => ({
+          AccessCode: t.id,
+          Name: t.name,
+          SoftCopies: t.softQty,
+          PrintedCopies: t.printQty,
+          SessionLimit: t.sessionLimit,
+          SessionUsed: t.sessionUsed,
+          PaymentMethod: t.method,
+          Total: t.total,
+          Status: t.status,
+          CreatedAt: t.createdAt,
+          Archived: t.archived
+        }))
+        const ws = XLSX.utils.json_to_sheet(rows)
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Transactions')
+        XLSX.writeFile(wb, 'cliqxi_transactions.xlsx')
+      } catch (e) { alert('Export failed: ' + e.message) }
+    }
+
+    // ==========================================================
+    // NEW FUNCTION: Copy text to clipboard
+    // ==========================================================
+    function copyTextToClipboard(text) {
+      if (navigator.clipboard) {
+        return navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = 0;
+        textarea.style.left = 0;
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand('copy');
+        } catch (err) {
+          console.error('Fallback: Unable to copy', err);
+        }
+        document.body.removeChild(textarea);
+        return Promise.resolve();
+      }
+    }
+
+    // ==========================================================
+    // NEW FUNCTION: Generate a clean plain-text receipt for Funny Print
+    // ==========================================================
+    function generatePlainTextReceipt(tx) {
+      // 32 characters is a common width for thermal printers (used for centering)
+      const line = '--------------------------------';
+      let receiptText = '\n' + line + '\n';
+
+      // Title (CENTERED via spaces - adjust if needed for a 32-char width)
+      const title = (settings.receiptTitle || 'CLIQXI PHOTOBOOTH').toUpperCase();
+      const titlePadding = ' '.repeat(Math.floor((32 - title.length) / 2));
+      receiptText += titlePadding + title + '\n';
+      receiptText += line + '\n';
+
+      // Items
+      if (tx.softQty > 0) {
+        receiptText += `Soft Copy (${tx.softQty}x) @ ${money(PRICES.soft)} = ${money(tx.softQty * PRICES.soft)}\n`;
+      }
+      if (tx.printQty > 0) {
+        receiptText += `Printed Copy (${tx.printQty}x) @ ${money(PRICES.print)} = ${money(tx.printQty * PRICES.print)}\n`;
+      }
+
+      receiptText += line + '\n';
+
+      // Total and Details
+      receiptText += `TOTAL (${tx.method}): ${money(tx.total)}\n\n`;
+      receiptText += `ACCESS CODE: ${tx.id}\n`;
+      receiptText += `SESSIONS: ${tx.sessionLimit - (tx.sessionUsed || 0)}/${tx.sessionLimit}\n`;
+      receiptText += `CUSTOMER: ${tx.name || 'GUEST'}\n`;
+      receiptText += `DATE: ${tx.createdAt.split(' ')[0]} ${tx.createdAt.split(' ')[1]}\n`;
+      receiptText += '\n' + line + '\n';
+      receiptText += '         THANK YOU\n'; // Simple centered thank you (8 spaces padding)
+      receiptText += line + '\n\n';
+
+      return receiptText;
+    }
+
+    // ==========================================================
+    // REVISED PRINT FUNCTION: Text Copy + Auto PDF Download
+    // ==========================================================
+    async function printReceipt() {
+      const txToPrint = window.currentRenderTx || JSON.parse(localStorage.getItem('cliqxi_last') || 'null');
+      if (!txToPrint) return alert('No receipt to print. Confirm a payment first or use Reprint Last.');
+
+      // 1. Ensure latest receipt is rendered in the preview area
+      renderReceiptInner(txToPrint);
+
+      const input = document.getElementById('receiptInner');
+
+      // 2. Perform the Copy-Paste action for Xiqi physical printer
+      const receiptText = generatePlainTextReceipt(txToPrint);
+      try {
+        await copyTextToClipboard(receiptText);
+        
+      } catch (error) {
+        alert("Failed to automatically copy text. Please try manually copying the text from the receipt preview area. \n\nDownloading PDF now.");
+        console.error('Copy failed:', error);
+      }
+
+
+      // 3. Convert HTML to PDF
+      try {
+        const canvas = await html2canvas(input, {
+          scale: 3, // Higher scale for better PDF quality
+          useCORS: true,
+          windowWidth: input.scrollWidth,
+          windowHeight: input.scrollHeight
+        });
+
+        // Initialize jsPDF
+        const {
+          jsPDF
+        } = window.jspdf;
+
+        // Define dimensions based on canvas for an auto-sizing PDF
+        const imgWidth = 80; // Target 80mm width for receipt
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+
+        // Create PDF with custom size (80mm width, dynamic height)
+        const pdf = new jsPDF('p', 'mm', [imgWidth, imgHeight]);
+
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+        // Add image to PDF
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+
+        // Download the PDF
+        pdf.save(`receipt-${txToPrint.id}.pdf`);
+
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+        // Note: The alert about PDF failure will show AFTER the copy success alert.
+      }
+    }
+
+    // ======= Export / Import =======
+    function downloadTransactions() { bulkExport() }
+
+    // ======= Misc =======
+    function resetForm() { $('softQty').value = 0; $('printQty').value = 0; $('custName').value = ''; selectPay('Cash'); updateTotals() }
+    function openSidebarFromBtn() { openSidebar() }
+
+    // initial selection
+    selectPay('Cash')
+    renderEventName()
+    // Initial load will render last receipt if available, otherwise it clears.
+
+    // expose helpers
+    window.exportToExcel = exportToExcel
+    window.renderTransactions = renderTransactions
+    window.downloadTransactions = downloadTransactions
+    window.bulkExport = bulkExport
+    window.clearArchived = clearArchived
+    window.archiveTx = archiveTx
+  </script>
+
+</body>
+
+</html>
